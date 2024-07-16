@@ -303,8 +303,10 @@ impl<I2C: I2cAccess> Imx219Control<I2C> {
 
     pub fn stop(&mut self) -> Result<(), Box<dyn Error>> {
         self.check_open()?;
-        self.i2c_write_u8(IMX219_MODE_SEL, 0x00)?; // mode_select [4:0] 0: SW standby, 1: Streaming
-        self.running = false;
+        if self.running {
+            self.i2c_write_u8(IMX219_MODE_SEL, 0x00)?; // mode_select [4:0] 0: SW standby, 1: Streaming
+            self.running = false;
+        }
         Ok(())
     }
 
