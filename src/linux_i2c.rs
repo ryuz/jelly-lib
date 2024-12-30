@@ -4,6 +4,7 @@
 use nix::fcntl::{open, OFlag};
 use nix::unistd::{close, read, write};
 use std::os::unix::io::RawFd;
+use std::os::unix::io::BorrowedFd;
 use std::error::Error;
 
 use crate::i2c_access::I2cAccess;
@@ -38,7 +39,8 @@ impl LinuxI2c {
 impl I2cAccess for LinuxI2c {
 
     fn write(&mut self, data: &[u8]) -> Result<usize, Box<dyn Error>> {
-        let len = write(self.fd, data)?;
+        let fd = unsafe { BorrowedFd::borrow_raw(self.fd) };
+        let len = write(fd, data)?;
         Ok(len)
     }
 
